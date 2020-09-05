@@ -6,17 +6,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../js/jquery-1.12.4.js"></script>
-    <script src="../js/jquery-ui.js"></script>
-    <script src="../js/bootstrap.js"></script>
     <title>Document</title>
+    <%@ include file = "/WEB-INF/views/inc/asset.jsp" %>
 </head>
 <body>
 	
 	<!-- 계속 유지를 시켜야 되는데?! -->
 	<form method = "GET" action = "/BoardTest/board/board.do" id = "searchform">
 	    <div id = "search">
-	        <input type="text" placeholder = "검색어를 입력하세요" name ="search">
+	    	<c:if test = "${not empty search}">
+	    		<input type="text" placeholder = "검색어를 입력하세요" name ="search" value = "${search}">
+	    	</c:if>
+	        
+	        <c:if test = "${empty search}">
+	        	<input type="text" placeholder = "검색어를 입력하세요" name ="search">
+	        </c:if>
+	        
 	        <button style = "outline: none;" onclick = "$('#searchform').submit();">검색</button>
 	    </div>
     </form>
@@ -27,7 +32,7 @@
             <th>책 제목</th>
             <th>출판사</th>
         </tr>
-        <c:forEach items = "${dtoList}" var = "dto">
+        <c:forEach items = "${list}" var = "dto">
         	<tr>
         		<td>${dto.seq}</td>
         		<td>${dto.subject}</td>
@@ -45,7 +50,6 @@
     
 
     <style>
-
         /* 검색 */
         #search {
             /* border: 1px solid red; */
@@ -80,7 +84,9 @@
         }
         #tblBook th {
             background-color: blueviolet;
+            text-align: center;
         }
+        
     </style>
 
 </body>

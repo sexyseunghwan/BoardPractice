@@ -31,7 +31,7 @@ public class BoardDAO {
 		}
 	}
 
-
+	
 	
 	//총 몇개를 가져올건지 정해준다
 	public int getTotalCount(Map<String, String> map) {
@@ -39,7 +39,8 @@ public class BoardDAO {
 			String where = "" ;
 			
 			if(map.get("search") != null && map.get("search") != "") {
-				where = String.format("where book_name like '%%%s%%' or publisher like '%%%s%'", map.get("search"),map.get("search"));
+				where = String.format("where book_name like '%%%s%%' or publisher like '%%%s%%'", map.get("search"),map.get("search"));//여기서 문제가 생겼다함.
+				System.out.println(where);
 			} else {
 				where = "";
 			}
@@ -52,7 +53,6 @@ public class BoardDAO {
 			if (rs.next()) {
 				return rs.getInt("cnt");
 			}
-			
 			
 			
 		} catch(Exception e) {
@@ -70,13 +70,33 @@ public class BoardDAO {
 			String where = "";
 			
 			if (map.get("search") != null && map.get("search") != "") {
-				where = "";
+				where = String.format("where book_name like '%%%s%%' or publisher like '%%%s%%'", map.get("search"),map.get("search"));
 			} else {
-				
+				where = "";
 			}
 			
-			String sql = "";
+			
+			String sql = String.format("select b.* from (select a.*,rownum as rn from (select tb.* from tblbook tb %s order by tb.seq_book) a) b where rn >= %s and rn <= %s", where ,map.get("begin"),map.get("end"));
+			
+			stat = conn.createStatement();
+			rs = stat.executeQuery(sql);
+			
+			List<BoardDTO> list = new ArrayList<BoardDTO>();
+			
+			
+			while(rs.next()) {
 				
+				BoardDTO dto = new BoardDTO();
+				
+				dto.setSeq(rs.getString("seq_book"));
+				dto.setSubject(rs.getString("book_name"));
+				dto.setContent(rs.getString("publisher"));
+				
+				list.add(dto);
+			}
+			
+			return list;
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
